@@ -1,0 +1,12 @@
+﻿Key,Type,Mandatory,Value,Date,Notes
+#Main metadata about the key (e.g. for citing the key),,,,,
+title,metadata,yes,<i>Fissidens</i> of North America,,
+year,metadata,yes,2025,,
+authors,metadata,yes,"Calloway, K. Mazzatta, A. & J.M. Budke",,
+publisher,metadata,no,University of Tennessee,,
+location,metadata,no,"Knoxville, Tennessee",,
+contact,metadata,no,,,
+version,metadata,yes,0.1,,
+#Releases - keep track of the release history below this line. Most recent releases at the top. The version code in the 'value' column below this line should match that of the current release above it.,,,,,
+release,history,no,1,11/22/16 0:00,Main release
+release,history,no,0.1,DATE,Initial Test Version
