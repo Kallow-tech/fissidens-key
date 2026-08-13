@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Identikit image check</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  h1 { font-size: 18px; }
+  .row { border: 1px solid #ccc; border-radius: 6px; padding: 10px; margin: 10px 0; }
+  .ok { color: #1a7f37; font-weight: bold; }
+  .bad { color: #c0281c; font-weight: bold; }
+  .url { font-family: monospace; font-size: 12px; word-break: break-all; color: #444; }
+  img.thumb { max-width: 180px; max-height: 140px; display: block; margin-top: 6px; border: 1px solid #ddd; }
+  #summary { font-size: 15px; margin: 10px 0; padding: 8px; background: #f2f4f5; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>Character help image check</h1>
+<div id="summary">Loading media.csv ...</div>
+<div id="list"></div>
+
+<script>
+var kbpath = "kb/biscuits2/";
+
+function splitCsvLine(line) {
+  var out = [], cur = "", inq = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { inq = !inq; }
+    else if (c === ',' && !inq) { out.push(cur); cur = ""; }
+    else { cur += c; }
+  }
+  out.push(cur);
+  return out.map(function(s){ return s.trim(); });
+}
+
+fetch(kbpath + "media.csv?t=" + Date.now())
+  .then(function(r){ return r.text(); })
+  .then(function(text){
+    var lines = text.replace(/^﻿/, "").split(/\r?\n/).filter(function(l){ return l.trim() !== ""; });
+    var header = splitCsvLine(lines[0]);
+    var idx = {};
+    header.forEach(function(h, i){ idx[h] = i; });
+
+    var rows = [];
+    for (var i = 1; i < lines.length; i++) {
+      var c = splitCsvLine(lines[i]);
+      var type = (c[idx["Type"]] || "").toLowerCase();
+      var character = c[idx["Character"]] || "";
+      var state = c[idx["State"]] || "";
+      var uri = c[idx["URI"]] || "";
+      var caption = c[idx["Caption"]] || "";
+      // Character-level help images: character set, state empty, local image
+      if (type === "image-local" && character !== "" && state === "") {
+        rows.push({ character: character, uri: uri, caption: caption });
+      }
+    }
+
+    document.getElementById("summary").textContent =
+      "Found " + rows.length + " character help image rows. Checking each...";
+
+    var okCount = 0, badCount = 0, done = 0;
+    var listEl = document.getElementById("list");
+
+    rows.forEach(function(row){
+      var src = kbpath + row.uri + "?t=kbimgstd";  // exactly how the identikit builds it
+      var div = document.createElement("div");
+      div.className = "row";
+      var status = document.createElement("div");
+      status.textContent = "checking...";
+      div.appendChild(status);
+      var info = document.createElement("div");
+      info.innerHTML = "<b>" + row.character + "</b> &mdash; " + row.caption +
+                       "<br><span class='url'>" + src + "</span>";
+      div.appendChild(info);
+      listEl.appendChild(div);
+
+      var img = new Image();
+      img.className = "thumb";
+      img.onload = function(){
+        okCount++; done++;
+        status.innerHTML = "<span class='ok'>LOADS OK</span> (" + img.naturalWidth + " x " + img.naturalHeight + " px)";
+        div.appendChild(img);
+        finish();
+      };
+      img.onerror = function(){
+        badCount++; done++;
+        status.innerHTML = "<span class='bad'>BROKEN - not found</span>";
+        finish();
+      };
+      img.src = src;
+    });
+
+    function finish(){
+      if (done === rows.length) {
+        document.getElementById("summary").innerHTML =
+          "<b>" + okCount + " load OK</b>, <b>" + badCount + " broken</b>, out of " + rows.length + " character help images.";
+      }
+    }
+
+    if (rows.length === 0) {
+      document.getElementById("summary").textContent = "No character help image rows found in media.csv.";
+    }
+  })
+  .catch(function(e){
+    document.getElementById("summary").textContent = "Could not load media.csv: " + e;
+  });
+</script>
+</body>
+</html>
