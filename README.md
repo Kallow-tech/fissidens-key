@@ -3,7 +3,7 @@
 An interactive multi-access identification key to the 37 species of *Fissidens*
 (Bryophyta, Fissidentaceae) occurring in North America.
 
-**Authors:** K. Calloway and J. M. Budke
+**Authors:** K. Calloway, A. Mazzatta and J. M. Budke
 **Institution:** University of Tennessee, Knoxville
 
 ## What this is
@@ -32,7 +32,8 @@ from the file system will not work, because the browser blocks the page from
 reading the local CSV files.
 
 ```bash
-cd identikit
+git clone https://github.com/Kallow-tech/fissidens-key.git
+cd fissidens-key
 python3 -m http.server 8000
 ```
 
