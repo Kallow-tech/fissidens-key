@@ -93,4 +93,4 @@ All content lives in the five CSV files. No code changes are needed to alter the
 
 Reference
 
-Flora of North America Editorial Committee. (Ed.). (2007). Flora of North America north of Mexico: Vol. 27. Bryophytes: Mosses, part 1. Oxford University Press.hors named above.
+Flora of North America Editorial Committee. (Ed.). (2007). Flora of North America north of Mexico: Vol. 27. Bryophytes: Mosses, part 1. Oxford University Press.
